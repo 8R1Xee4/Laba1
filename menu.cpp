@@ -23,7 +23,7 @@ void MainMenu::resizeEvent(QResizeEvent* ev)
     int btnW  = static_cast<int>(cellW * cellWcoef);
     int hMargin = (W - btnW) / 2;
 
-    for (size_t i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       int y = y0 + i * cellH + vMargin;
       int x = x0 + hMargin;
       buttons[i]->setGeometry(x, y, btnW, btnH);

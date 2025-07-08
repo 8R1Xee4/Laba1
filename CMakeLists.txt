@@ -14,7 +14,7 @@ if(CMAKE_VERSION VERSION_LESS "3.7.0")
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif()
 
-find_package(Qt6 COMPONENTS Widgets GUI REQUIRED)
+find_package(Qt6 COMPONENTS Widgets GUI Core REQUIRED)
 
 file(GLOB CPP_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 file(GLOB UI_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.ui")
@@ -27,4 +27,5 @@ add_executable(laba1
 target_link_libraries(laba1
     Qt6::Widgets
     Qt6::Gui
+    Qt6::Core
 )

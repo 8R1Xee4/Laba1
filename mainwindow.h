@@ -8,6 +8,7 @@
 #include <QDialog>
 #include "menu.h"
 #include "infodialog.h"
+#include "loghandler.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -29,6 +30,7 @@ public slots:
     void slotExitButton();
 
 protected:
+    void initializeLogHandler();
     void initializeMainWindow();
     void initializeMainMenu();
     void initializeStack();

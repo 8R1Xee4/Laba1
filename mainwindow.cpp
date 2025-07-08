@@ -5,6 +5,7 @@ MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+  initializeLogHandler();
   initializeMainWindow();
   initializeMainMenu();
   initializeMenuBar();
@@ -21,6 +22,13 @@ MainWindow::~MainWindow()
 }
 
 // ----------------------------------------------
+
+void MainWindow::initializeLogHandler()
+{
+  logHandler.addFile(QString("logs/") + QDateTime::currentDateTime().toString("yyyy-MM-dd_hh.mm.ss.log"));
+  logHandler.addTextStream(*(new QTextStream(stdout)));
+  qInstallMessageHandler(&LogHandler::messageHandler);
+}
 
 void MainWindow::initializeMainWindow()
 {
@@ -101,7 +109,7 @@ void MainWindow::slotExitButton()
 {
   qDebug() << "User pressed exit button (main menu).";
   onExit();
-  qApp->exit(0);
+  this->close();
 }
 
 // ------------------------------------------------------------
