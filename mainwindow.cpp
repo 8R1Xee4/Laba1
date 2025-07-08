@@ -5,8 +5,7 @@ MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-  ui->setupUi(this);
-
+  initializeMainWindow();
   initializeMainMenu();
   initializeMenuBar();
   initializeApp();
@@ -21,6 +20,14 @@ MainWindow::~MainWindow()
   delete ui;
 }
 
+// ----------------------------------------------
+
+void MainWindow::initializeMainWindow()
+{
+  ui->setupUi(this);
+  canClose = 1;
+}
+
 void MainWindow::initializeMainMenu()
 {
   menu = new MainMenu(this);
@@ -28,6 +35,7 @@ void MainWindow::initializeMainMenu()
   menu->addButton("info");
   menu->addButton("exit");
   menu->show();
+  qDebug() << "Main menu initialized.";
 }
 
 void MainWindow::initializeStack()
@@ -37,6 +45,7 @@ void MainWindow::initializeStack()
   stack->addWidget(app);
   stack->setCurrentIndex(0);
   this->setCentralWidget(stack);
+  qDebug() << "Widget stack initialized.";
 }
 
 // Need work
@@ -44,6 +53,7 @@ void MainWindow::initializeMenuBar()
 {
   // ...
   menuBar()->hide();
+  qDebug() << "Menu bar initialized.";
 }
 
 // Need work
@@ -51,22 +61,74 @@ void MainWindow::initializeApp()
 {
   app = new QWidget(this);
   // ...
+  qDebug() << "App initialized.";
 }
 
+// -------------------------------------------------
 
 void MainWindow::connectMainMenu()
 {
   QVector<QPushButton*>& b = menu->getButtons();
-  connect(b[0], &QPushButton::clicked, this, &MainWindow::slotChangeWindow);
-}
-
-void MainWindow::slotChangeWindow()
-{
-  stack->setCurrentIndex(1);
+  connect(b[0], &QPushButton::clicked, this, &MainWindow::slotStartButton);
+  connect(b[1], &QPushButton::clicked, this, &MainWindow::slotInfoButton);
+  connect(b[2], &QPushButton::clicked, this, &MainWindow::slotExitButton);
+  qDebug() << "Main menu connected.";
 }
 
 // Need work
 void MainWindow::connectApp()
 {
   // ...
+  qDebug() << "App connected.";
+}
+
+// ---------------------------------------------
+
+void MainWindow::slotStartButton()
+{
+  qDebug() << "User pressed start button (main menu).";
+  stack->setCurrentIndex(1);
+  menuBar()->show();
+}
+
+void MainWindow::slotInfoButton()
+{
+  qDebug() << "User pressed info button (main menu).";
+  showAppInfo();
+}
+
+void MainWindow::slotExitButton()
+{
+  qDebug() << "User pressed exit button (main menu).";
+  onExit();
+  qApp->exit(0);
+}
+
+// ------------------------------------------------------------
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+  qDebug() << "Closing application...";
+  if (canClose) {
+    onExit();
+    qDebug() << "Closing in action.";
+    event->accept();
+  } else {
+    qDebug() << "Closing ignored.";
+    event->ignore();
+  }
+}
+
+// ---------------------------------------------------------------
+
+void MainWindow::onExit()
+{
+  qDebug() << "On exit event called.";
+}
+
+void MainWindow::showAppInfo()
+{
+  qDebug() << "Dialog called.";
+  InfoDialog* dlg = new InfoDialog(this);
+  dlg->show();
 }

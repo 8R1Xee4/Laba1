@@ -5,7 +5,9 @@
 #include <QBoxLayout>
 #include <QtWidgets>
 #include <QDebug>
+#include <QDialog>
 #include "menu.h"
+#include "infodialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -22,19 +24,31 @@ public:
     ~MainWindow();
 
 public slots:
-    void slotChangeWindow();
+    void slotStartButton();
+    void slotInfoButton();
+    void slotExitButton();
 
-private:
+protected:
+    void initializeMainWindow();
     void initializeMainMenu();
     void initializeStack();
     void initializeMenuBar();
     void initializeApp();
 
-    
+
     void connectMainMenu();
     void connectApp();
 
+
+    void closeEvent(QCloseEvent *ev);
+
+    void showAppInfo();
+    void onExit();
+
+
 private:
+    bool canClose;
+
     Ui::MainWindow *ui;
     MainMenu* menu;
     QWidget* app;
