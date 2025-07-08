@@ -20,16 +20,16 @@ public:
     MainMenu(QWidget *parent = nullptr);
     ~MainMenu() = default;
 
-    void setGeometry(const QRect& r)
-    {
-        QWidget::setGeometry(r);
-    }
-
+    QVector<QPushButton*>& getButtons();
+    void addButton(QString text = "");
 protected:
     void resizeEvent(QResizeEvent* ev) override;
 
 private:
-    const qreal wcoef = 0.7;
+    const qreal wcoef = 0.3;
+    const qreal hcoef = 0.3;
+    const qreal cellHcoef = 0.7;
+    const qreal cellWcoef = 1;
     const qreal fcoef = 0.5;
     QVector<QPushButton*> buttons;
 

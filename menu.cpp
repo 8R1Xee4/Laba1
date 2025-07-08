@@ -1,39 +1,46 @@
 
 #include"menu.h"
 
-MainMenu::MainMenu(QWidget* parent) : QWidget(parent)
-{
-    buttons.append(new QPushButton("start", this)); buttons[0]->show();
-    buttons.append(new QPushButton("exit", this));  buttons[1]->show();
-    buttons.append(new QPushButton("info", this));  buttons[2]->show();
-}
+MainMenu::MainMenu(QWidget* parent) : QWidget(parent) { }
 
 
 void MainMenu::resizeEvent(QResizeEvent* ev)
 {
   QWidget::resizeEvent(ev);
   QSize  s = ev->size();
-  int    H = s.height();
-  int    W = s.width();
+  int    H = static_cast<int>(s.height() * hcoef);
+  int    W = static_cast<int>(s.width() * wcoef);
   int    N = buttons.size();
-  if (N == 0) return;
 
-  // Full cell height
-  int cellH = H / N;
-  // Button height is coef * cellH
-  int btnH  = int(cellH * wcoef);
-  // Center vertically inside each cell
-  int vMargin = (cellH - btnH) / 2;
-  // (Optionally) you can also shrink the width by some factor:
-  int btnW  = W;        // or int(W * someWidthCoef)
-  int hMargin = (W - btnW) / 2;
+  int   x0 = (s.width() - W) / 2;
+  int   y0 = (s.height() - H) / 2;
 
-  for (size_t i = 0; i < N; i++) {
-    int y = i * cellH + vMargin;
-    int x = hMargin;
-    buttons[i]->setGeometry(x, y, btnW, btnH);
-    QFont f = buttons[i]->font();
-    f.setPixelSize(fcoef*btnH);
-    buttons[i]->setFont(f);
+  if(N != 0) {
+    int cellH = H / N;
+    int cellW = W;
+    int btnH  = static_cast<int>(cellH * cellHcoef);
+    int vMargin = (cellH - btnH) / 2;
+    int btnW  = static_cast<int>(cellW * cellWcoef);
+    int hMargin = (W - btnW) / 2;
+
+    for (size_t i = 0; i < N; i++) {
+      int y = y0 + i * cellH + vMargin;
+      int x = x0 + hMargin;
+      buttons[i]->setGeometry(x, y, btnW, btnH);
+
+      QFont f = buttons[i]->font();
+      f.setPixelSize(static_cast<int>(fcoef * btnH));
+      buttons[i]->setFont(f);
+    }
   }
+}
+
+QVector<QPushButton*>& MainMenu::getButtons()
+{
+  return buttons;
+}
+
+void MainMenu::addButton(QString text)
+{
+  buttons.append(new QPushButton(text, this));
 }

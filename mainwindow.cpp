@@ -6,9 +6,14 @@ MainWindow::MainWindow(QWidget *parent)
     ui(new Ui::MainWindow)
 {
   ui->setupUi(this);
-  menu = new MainMenu(this);
-  menu->show();
 
+  initializeMainMenu();
+  initializeMenuBar();
+  initializeApp();
+  initializeStack();
+
+  connectMainMenu();
+  connectApp();
 }
 
 MainWindow::~MainWindow()
@@ -16,11 +21,52 @@ MainWindow::~MainWindow()
   delete ui;
 }
 
-
-void MainWindow::resizeEvent(QResizeEvent* ev)
+void MainWindow::initializeMainMenu()
 {
-  QSize s = ev->size();
-  QSize ms = {s.width() * menuWSize, s.height() * menuHSize};
-  QPoint mp = {(s.width()-ms.width())/2, {(s.height()-ms.height())/2}};
-  menu->setGeometry(QRect(mp, ms));
+  menu = new MainMenu(this);
+  menu->addButton("start");
+  menu->addButton("info");
+  menu->addButton("exit");
+  menu->show();
+}
+
+void MainWindow::initializeStack()
+{
+  stack = new QStackedWidget(this);
+  stack->addWidget(menu);
+  stack->addWidget(app);
+  stack->setCurrentIndex(0);
+  this->setCentralWidget(stack);
+}
+
+// Need work
+void MainWindow::initializeMenuBar()
+{
+  // ...
+  menuBar()->hide();
+}
+
+// Need work
+void MainWindow::initializeApp()
+{
+  app = new QWidget(this);
+  // ...
+}
+
+
+void MainWindow::connectMainMenu()
+{
+  QVector<QPushButton*>& b = menu->getButtons();
+  connect(b[0], &QPushButton::clicked, this, &MainWindow::slotChangeWindow);
+}
+
+void MainWindow::slotChangeWindow()
+{
+  stack->setCurrentIndex(1);
+}
+
+// Need work
+void MainWindow::connectApp()
+{
+  // ...
 }
