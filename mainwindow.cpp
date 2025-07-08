@@ -6,9 +6,21 @@ MainWindow::MainWindow(QWidget *parent)
     ui(new Ui::MainWindow)
 {
   ui->setupUi(this);
-}   
+  menu = new MainMenu(this);
+  menu->show();
+
+}
 
 MainWindow::~MainWindow()
 {
   delete ui;
+}
+
+
+void MainWindow::resizeEvent(QResizeEvent* ev)
+{
+  QSize s = ev->size();
+  QSize ms = {s.width() * menuWSize, s.height() * menuHSize};
+  QPoint mp = {(s.width()-ms.width())/2, {(s.height()-ms.height())/2}};
+  menu->setGeometry(QRect(mp, ms));
 }

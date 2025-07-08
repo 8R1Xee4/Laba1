@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5...4.0)
-project(test-prj VERSION 1.0.0 LANGUAGES CXX)
+project(laba1 VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -14,14 +14,17 @@ if(CMAKE_VERSION VERSION_LESS "3.7.0")
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif()
 
-find_package(Qt6 COMPONENTS Widgets REQUIRED)
+find_package(Qt6 COMPONENTS Widgets GUI REQUIRED)
 
-add_executable(test-prj
-    main.cpp
-    mainwindow.cpp
-    mainwindow.ui
+file(GLOB CPP_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+file(GLOB UI_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.ui")
+
+add_executable(laba1    
+    ${CPP_SOURCES}
+    ${UI_FILES}
 )
 
-target_link_libraries(test-prj
+target_link_libraries(laba1
     Qt6::Widgets
+    Qt6::Gui
 )
