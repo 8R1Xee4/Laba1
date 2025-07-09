@@ -67,6 +67,7 @@ void MainWindow::initializeMenuBar()
   newFileAct  = fileMenu->addAction(tr("&New"), QKeySequence::New, this, &MainWindow::slotNewFileAct);
   openFileAct = fileMenu->addAction(tr("&Open…"), QKeySequence::Open, this, &MainWindow::slotOpenFileAct);
   saveFileAct = fileMenu->addAction(tr("&Save"), QKeySequence::Save, this, &MainWindow::slotSaveFileAct);
+  saveFileAsAct = fileMenu->addAction(tr("&Save as…"), QKeySequence::SaveAs, this, &MainWindow::slotSaveFileAsAct);
   fileMenu->addSeparator();
   exitAct     = fileMenu->addAction(tr("E&xit"), QKeySequence::Quit, this, &MainWindow::slotExitAct);
 
@@ -119,6 +120,8 @@ void MainWindow::slotStartButton()
   qDebug(logInfo()) << "User pressed start button (main menu).";
   stack->setCurrentIndex(1);
   menuBar()->show();
+  setWindowTitle(tr("Untitled - ") + appName);
+  modified = 1;
 }
 
 void MainWindow::slotInfoButton()
@@ -138,12 +141,13 @@ void MainWindow::slotExitButton()
 // File menu slots
 void MainWindow::slotNewFileAct()
 {
+  qDebug(logInfo()) << "New file action called.";
   if (!maybeSave())
     return;                     // user cancelled
 
   //textEdit->clear();
   //textEdit->document()->setModified(false);
-  modified = 0;
+  modified = 1;
 
   currentFile.clear();
   setWindowTitle(tr("Untitled - ") + appName);
@@ -153,10 +157,20 @@ void MainWindow::slotNewFileAct()
 //–– Save (Save or Save As) ––
 void MainWindow::slotSaveFileAct()
 {
+  qDebug(logInfo()) << "Save file action called.";
   if (saveFile())
     qDebug(logInfo()) << "Document saved.";
   else
     qDebug(logWarning()) << "Save cancelled or failed.";
+}
+
+void MainWindow::slotSaveFileAsAct()
+{
+  qDebug(logInfo()) << "Save file as action called.";
+  if(saveFileAs())
+  {
+    qDebug(logInfo()) << "Saved successfully.";
+  } else qDebug(logWarning()) << "Couldn't save as.";
 }
 
 //–– ask Save As ––
@@ -180,6 +194,7 @@ bool MainWindow::saveFile()
 //–– Actual disk write ––
 bool MainWindow::saveToFile(const QString &fileName)
 {
+  qDebug(logInfo()) << "Trying to save to " << fileName;
   QFile file(fileName);
   if (!file.open(QFile::WriteOnly | QFile::Text)) {
     QMessageBox::warning( this, tr("Error"), tr("Cannot write file %1:\n%2").arg(QDir::toNativeSeparators(fileName), file.errorString()));
@@ -206,6 +221,7 @@ bool MainWindow::maybeSave()
 
   if(!modified)
     return true;
+  qDebug(logInfo()) << "Asking user to save.";
 
   auto ret = QMessageBox::warning(
     this,
@@ -232,7 +248,7 @@ void MainWindow::slotExitAct()
 
 void MainWindow::slotOpenFileAct()
 {
-  qDebug(logInfo()) << "Open file action.";
+  qDebug(logInfo()) << "Open file action called.";
   QString path = QFileDialog::getOpenFileName(this, tr("Open File"), QString(), tr("Text Files (*.txt);;All Files (*)"));
   if(path.isEmpty()) return;
 

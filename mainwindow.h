@@ -33,6 +33,7 @@ public slots:
     void slotNewFileAct();
     void slotOpenFileAct();
     void slotSaveFileAct();
+    void slotSaveFileAsAct();
     void slotExitAct();
 
     void slotUndoAct();
@@ -87,6 +88,7 @@ private:
     QAction* newFileAct;
     QAction* openFileAct;
     QAction* saveFileAct;
+    QAction* saveFileAsAct;
     QAction* exitAct;
 
     QAction* undoAct;
