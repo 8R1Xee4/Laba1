@@ -1,3 +1,4 @@
+#include "loghandler.h"
 #include "infodialog.h"
 #include "ui_infodialog.h"
 
@@ -16,7 +17,7 @@ InfoDialog::~InfoDialog()
 
 void InfoDialog::closeEvent(QCloseEvent *event)
 {
-  qDebug() << "Closing dialog window...";
+  qDebug(logInfo()) << "Closing dialog window...";
   event->accept();
 }
 
@@ -34,6 +35,6 @@ void InfoDialog::connectSlots()
 
 void InfoDialog::buttonPress()
 {
-  qDebug() << "InfoDialog was closed.";
+  qDebug(logInfo()) << "InfoDialog was closed.";
   this->close();
 }

@@ -44,7 +44,7 @@ void LogHandler::write(QTextStream& out, QtMsgType type, const QMessageLogContex
     out.flush();    // Очищаем буферизированные данные
     if(type == QtFatalMsg)
     {
-        qDebug(logInfo) << "Fatal error: can't continue the work. Closing the application...";
+        qDebug(logInfo()) << "Fatal error: can't continue the work. Closing the application...";
         QApplication::exit(-1);
     }
 }
@@ -81,7 +81,7 @@ void LogHandler::addFile(const QString& filepath)
     {
         if(!QDir().mkpath(dir.absolutePath()))
         {
-            qDebug(logWarning) << "Failed to create log directory: " << dir.absolutePath();
+            qDebug(logWarning()) << "Failed to create log directory: " << dir.absolutePath();
             return;
         }
     }
