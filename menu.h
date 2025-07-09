@@ -1,10 +1,11 @@
 #ifndef MENU_H
 #define MENU_H
 
-#include<QWidget>
-#include<QPushButton>
-#include<QBoxLayout>
-#include<QResizeEvent>
+#include <QWidget>
+#include <QPushButton>
+#include <QBoxLayout>
+#include <QResizeEvent>
+#include "loghandler.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

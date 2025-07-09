@@ -9,6 +9,7 @@
 #include "menu.h"
 #include "infodialog.h"
 #include "loghandler.h"
+#include "secondwindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -29,6 +30,19 @@ public slots:
     void slotInfoButton();
     void slotExitButton();
 
+    void slotNewFileAct();
+    void slotOpenFileAct();
+    void slotSaveFileAct();
+    void slotExitAct();
+
+    void slotUndoAct();
+    void slotRedoAct();
+    void slotCutAct();
+    void slotPasteAct();
+
+    void slotAboutAct();
+
+
 protected:
     void initializeLogHandler();
     void initializeMainWindow();
@@ -47,14 +61,39 @@ protected:
     void showAppInfo();
     void onExit();
 
+    bool     maybeSave();
+    bool     saveFile();
+    bool     saveFileAs();
+    bool     saveToFile(const QString &fileName);
+
 
 private:
+    QString appName = "Laba1";
+
     bool canClose;
+    bool modified;
 
     Ui::MainWindow *ui;
     MainMenu* menu;
     QWidget* app;
     QStackedWidget* stack;
-    
+
+    QString  currentFile;       // empty == untitled
+
+    QMenu* fileMenu;
+    QMenu* editMenu;
+    QMenu* helpMenu;
+
+    QAction* newFileAct;
+    QAction* openFileAct;
+    QAction* saveFileAct;
+    QAction* exitAct;
+
+    QAction* undoAct;
+    QAction* redoAct;
+    QAction* cutAct;
+    QAction* pasteAct;
+
+    QAction* aboutAct;
 };
 #endif // MAINWINDOW_H
