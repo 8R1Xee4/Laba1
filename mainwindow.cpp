@@ -13,7 +13,6 @@ MainWindow::MainWindow(QWidget *parent)
     initializeMenuBar();
 
     connectMainMenu();
-    connectApp();
   }
 
 MainWindow::~MainWindow()
@@ -35,8 +34,9 @@ void MainWindow::initializeMainWindow()
 {
   ui->setupUi(this);
   this->setWindowTitle(appName);
+  this->setFixedSize(500,300);
   canClose = 1;
-  modified = 0;
+  modified = 0; 
   qDebug(logInfo()) << "Main window initialized.";
 }
 
@@ -87,11 +87,9 @@ void MainWindow::initializeMenuBar()
   qDebug(logInfo()) << "Menu bar initialized.";
 }
 
-// Need work
 void MainWindow::initializeApp()
 {
-  app = new QWidget(this);
-  // ...
+  app = new SecondWindow(this);
   qDebug(logInfo()) << "App initialized.";
 }
 
@@ -104,13 +102,6 @@ void MainWindow::connectMainMenu()
   connect(b[1], &QPushButton::clicked, this, &MainWindow::slotInfoButton);
   connect(b[2], &QPushButton::clicked, this, &MainWindow::slotExitButton);
   qDebug(logInfo()) << "Main menu connected.";
-}
-
-// Need work
-void MainWindow::connectApp()
-{
-  // ...
-  qDebug(logInfo()) << "App connected.";
 }
 
 // ---------------------------------------------
@@ -145,8 +136,8 @@ void MainWindow::slotNewFileAct()
   if (!maybeSave())
     return;                     // user cancelled
 
-  //textEdit->clear();
-  //textEdit->document()->setModified(false);
+  app->clear();
+  app->setModified(false);
   modified = 1;
 
   currentFile.clear();
@@ -203,12 +194,12 @@ bool MainWindow::saveToFile(const QString &fileName)
   }
 
   QTextStream out(&file);
-  //out << textEdit->toPlainText();
+  app->write(out);
   file.close();
 
   currentFile = fileName;
   modified = 0;
-  //textEdit->document()->setModified(false);
+  app->setModified(false);
   setWindowTitle(QFileInfo(currentFile).fileName() + tr(" - ") + appName);
   return true;
 }
@@ -216,8 +207,8 @@ bool MainWindow::saveToFile(const QString &fileName)
 //–– Prompt the user to save if the document is dirty ––
 bool MainWindow::maybeSave()
 {
-  //if (!textEdit->document()->isModified())
-  //  modified = 1;
+  if (!app->isModified())
+    modified = 1;
 
   if(!modified)
     return true;
@@ -259,7 +250,7 @@ void MainWindow::slotOpenFileAct()
     return;
   }
   QTextStream in(&f);
-  // ...
+  app->read(in);
   f.close();
   qDebug(logInfo()) << "Opened: " << path;
 }
@@ -270,22 +261,22 @@ void MainWindow::slotOpenFileAct()
 void MainWindow::slotUndoAct()   
 { 
   qDebug(logInfo()) << "Undo action.";
-  // textEdit->undo(); 
+  app->undo(); 
 }
 void MainWindow::slotRedoAct()   
 { 
   qDebug(logInfo()) << "Redo action.";
-  // textEdit->redo(); 
+  app->redo(); 
 }
 void MainWindow::slotCutAct()    
 { 
   qDebug(logInfo()) << "Cut action.";
-  // textEdit->cut(); 
+  app->cut(); 
 }
 void MainWindow::slotPasteAct()  
 { 
   qDebug(logInfo()) << "Paste action.";
-  // textEdit->paste(); 
+  app->paste(); 
 }
 
 // ---------------------------------------------

@@ -54,7 +54,6 @@ protected:
 
 
     void connectMainMenu();
-    void connectApp();
 
 
     void closeEvent(QCloseEvent *ev);
@@ -76,7 +75,7 @@ private:
 
     Ui::MainWindow *ui;
     MainMenu* menu;
-    QWidget* app;
+    SecondWindow* app;
     QStackedWidget* stack;
 
     QString  currentFile;       // empty == untitled

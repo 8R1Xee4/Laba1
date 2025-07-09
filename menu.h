@@ -27,8 +27,8 @@ protected:
     void resizeEvent(QResizeEvent* ev) override;
 
 private:
-    const qreal wcoef = 0.3;
-    const qreal hcoef = 0.3;
+    const qreal wcoef = 0.5;
+    const qreal hcoef = 0.5;
     const qreal cellHcoef = 0.7;
     const qreal cellWcoef = 1;
     const qreal fcoef = 0.5;
