@@ -19,7 +19,8 @@ find_package(Qt6 COMPONENTS Widgets GUI Core REQUIRED)
 file(GLOB CPP_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 file(GLOB UI_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.ui")
 
-add_executable(laba1    
+add_executable(laba1 
+    WIN32
     ${CPP_SOURCES}
     ${UI_FILES}
 )
