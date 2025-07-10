@@ -25,7 +25,7 @@ class ContentWindow : public QWidget
 
 public:
     ContentWindow(QWidget* parent = nullptr);
-    ~ContentWindow();
+    ~ContentWindow() = default;
 
     void write(QTextStream& out);
     void read(QTextStream& in);

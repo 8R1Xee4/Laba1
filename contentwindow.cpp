@@ -8,11 +8,6 @@ ContentWindow::ContentWindow(QWidget* parent)
     connectContentWindow();
 }
 
-ContentWindow::~ContentWindow()
-{
-    delete listView;
-}
-
 void ContentWindow::initializeContentWindow()
 {
     combobox = new QComboBox(this);
@@ -45,7 +40,7 @@ void ContentWindow::initializeContentWindow()
     bottomLayout->addWidget(label_output);
     mainLayout->addLayout(bottomLayout);
 
-    listView = new HistoryWidget();
+    listView = new HistoryWidget(this);
     listView->hide();
 
     setLayout(mainLayout);
@@ -108,11 +103,11 @@ void ContentWindow::handle()
     {
         if(checkbox_isWrite->isChecked()) {
             is_m = 1;
-            label_output->setText(entry);
             listView->addItem(entry);
             g_history.append(entry);
             qDebug(logInfo()) << tr("Appended to history:") << entry;
         }
+        label_output->setText(entry);
     }
 }
 
