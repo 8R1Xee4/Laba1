@@ -7,12 +7,9 @@ MainWindow::MainWindow(QWidget *parent)
   {
     initializeLogHandler();
     initializeMainWindow();
-    initializeMainMenu();
     initializeApp();
-    initializeStack();
     initializeMenuBar();
-
-    connectMainMenu();
+    this->newDocument();
   }
 
 MainWindow::~MainWindow()
@@ -33,36 +30,12 @@ void MainWindow::initializeLogHandler()
 void MainWindow::initializeMainWindow()
 {
   ui->setupUi(this);
-  this->setWindowTitle(appName);
   this->setFixedSize(500,300);
-  canClose = 1;
-  modified = 0; 
   qDebug(logInfo()) << "Main window initialized.";
-}
-
-void MainWindow::initializeMainMenu()
-{
-  menu = new MainMenu(this);
-  menu->addButton("start");
-  menu->addButton("info");
-  menu->addButton("exit");
-  menu->show();
-  qDebug(logInfo()) << "Main menu initialized.";
-}
-
-void MainWindow::initializeStack()
-{
-  stack = new QStackedWidget(this);
-  stack->addWidget(menu);
-  stack->addWidget(app);
-  stack->setCurrentIndex(0);
-  this->setCentralWidget(stack);
-  qDebug(logInfo()) << "Widget stack initialized.";
 }
 
 void MainWindow::initializeMenuBar()
 {
-  // --- File Menu ---
   fileMenu = menuBar()->addMenu(tr("&File"));
   newFileAct  = fileMenu->addAction(tr("&New"), QKeySequence::New, this, &MainWindow::slotNewFileAct);
   openFileAct = fileMenu->addAction(tr("&Open…"), QKeySequence::Open, this, &MainWindow::slotOpenFileAct);
@@ -71,7 +44,6 @@ void MainWindow::initializeMenuBar()
   fileMenu->addSeparator();
   exitAct     = fileMenu->addAction(tr("E&xit"), QKeySequence::Quit, this, &MainWindow::slotExitAct);
 
-  // --- Edit Menu ---
   editMenu = menuBar()->addMenu(tr("&Edit"));
   undoAct  = editMenu->addAction(tr("&Undo"), QKeySequence::Undo, this, &MainWindow::slotUndoAct);
   redoAct  = editMenu->addAction(tr("&Redo"), QKeySequence::Redo, this, &MainWindow::slotRedoAct);
@@ -79,73 +51,29 @@ void MainWindow::initializeMenuBar()
   cutAct   = editMenu->addAction(tr("Cu&t"), QKeySequence::Cut, this, &MainWindow::slotCutAct);
   pasteAct = editMenu->addAction(tr("&Paste"), QKeySequence::Paste, this, &MainWindow::slotPasteAct);
 
-  // --- Help Menu ---
   helpMenu = menuBar()->addMenu(tr("&Help"));
   aboutAct = helpMenu->addAction(tr("&About"), this, &MainWindow::slotAboutAct);
   
-  menuBar()->hide();
+  menuBar()->show();
   qDebug(logInfo()) << "Menu bar initialized.";
 }
 
 void MainWindow::initializeApp()
 {
-  app = new SecondWindow(this);
+  app = new ContentWindow(this);
+  this->setCentralWidget(app);
   qDebug(logInfo()) << "App initialized.";
 }
 
-// -------------------------------------------------
-
-void MainWindow::connectMainMenu()
-{
-  QVector<QPushButton*>& b = menu->getButtons();
-  connect(b[0], &QPushButton::clicked, this, &MainWindow::slotStartButton);
-  connect(b[1], &QPushButton::clicked, this, &MainWindow::slotInfoButton);
-  connect(b[2], &QPushButton::clicked, this, &MainWindow::slotExitButton);
-  qDebug(logInfo()) << "Main menu connected.";
-}
-
-// ---------------------------------------------
-
-void MainWindow::slotStartButton()
-{
-  qDebug(logInfo()) << "User pressed start button (main menu).";
-  stack->setCurrentIndex(1);
-  menuBar()->show();
-  setWindowTitle(tr("Untitled - ") + appName);
-  modified = 1;
-}
-
-void MainWindow::slotInfoButton()
-{
-  qDebug(logInfo()) << "User pressed info button (main menu).";
-  showAppInfo();
-}
-
-void MainWindow::slotExitButton()
-{
-  qDebug(logInfo()) << "User pressed exit button (main menu).";
-  onExit();
-  this->close();
-}
-
 // ------------------------------------------------------------
-// File menu slots
+
 void MainWindow::slotNewFileAct()
 {
   qDebug(logInfo()) << "New file action called.";
-  if (!maybeSave())
-    return;                     // user cancelled
-
-  app->clear();
-  app->setModified(false);
-  modified = 1;
-
-  currentFile.clear();
-  setWindowTitle(tr("Untitled - ") + appName);
+  this->newDocument();
   qDebug(logInfo()) << "New document created.";
 }
 
-//–– Save (Save or Save As) ––
 void MainWindow::slotSaveFileAct()
 {
   qDebug(logInfo()) << "Save file action called.";
@@ -159,12 +87,11 @@ void MainWindow::slotSaveFileAsAct()
 {
   qDebug(logInfo()) << "Save file as action called.";
   if(saveFileAs())
-  {
     qDebug(logInfo()) << "Saved successfully.";
-  } else qDebug(logWarning()) << "Couldn't save as.";
+  else 
+    qDebug(logWarning()) << "Save cancelled or failed.";
 }
 
-//–– ask Save As ––
 bool MainWindow::saveFileAs()
 {
   QString fn = QFileDialog::getSaveFileName(this, tr("Save As"), QString(), tr("Text Files (*.txt);;All Files (*)"));
@@ -174,7 +101,6 @@ bool MainWindow::saveFileAs()
   return saveToFile(fn);
 }
 
-//–– Save currentFile, or fall back to Save As ––
 bool MainWindow::saveFile()
 {
   if (currentFile.isEmpty())
@@ -182,14 +108,13 @@ bool MainWindow::saveFile()
   return saveToFile(currentFile);
 }
 
-//–– Actual disk write ––
 bool MainWindow::saveToFile(const QString &fileName)
 {
   qDebug(logInfo()) << "Trying to save to " << fileName;
   QFile file(fileName);
   if (!file.open(QFile::WriteOnly | QFile::Text)) {
     QMessageBox::warning( this, tr("Error"), tr("Cannot write file %1:\n%2").arg(QDir::toNativeSeparators(fileName), file.errorString()));
-    qDebug(logWarning) << "Cannot write file: " << fileName;
+    qDebug(logWarning) << tr("Cannot write file %1:\n%2").arg(QDir::toNativeSeparators(fileName), file.errorString());
     return false;
   }
 
@@ -198,25 +123,19 @@ bool MainWindow::saveToFile(const QString &fileName)
   file.close();
 
   currentFile = fileName;
-  modified = 0;
   app->setModified(false);
   setWindowTitle(QFileInfo(currentFile).fileName() + tr(" - ") + appName);
   return true;
 }
 
-//–– Prompt the user to save if the document is dirty ––
 bool MainWindow::maybeSave()
 {
-  if (!app->isModified())
-    modified = 1;
-
-  if(!modified)
+  if(!app->isModified())
     return true;
   qDebug(logInfo()) << "Asking user to save.";
 
   auto ret = QMessageBox::warning(
-    this,
-    appName,
+    this, appName,
     tr("The document has been modified.\nDo you want to save your changes?"),
     QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, QMessageBox::Save
   );
@@ -226,7 +145,7 @@ bool MainWindow::maybeSave()
       return saveFile();
     case QMessageBox::Cancel:
       return false;
-    default: // Discard
+    default:
       return true;
   }
 }
@@ -246,17 +165,22 @@ void MainWindow::slotOpenFileAct()
   QFile f(path);
   if(!f.open(QIODevice::ReadOnly | QIODevice::Text)){
     QMessageBox::warning(this, tr("Error"), tr("Cannot open file %1").arg(path));
-    qDebug(logWarning()) << "Couldn't open file: " << path;
+    qDebug(logWarning()) << tr("Cannot open file %1").arg(path);
     return;
   }
+
   QTextStream in(&f);
   app->read(in);
   f.close();
+
+  currentFile = path;
+  app->setModified(false);
+  this->setWindowTitle(QFileInfo(currentFile).fileName() + tr(" - ") + appName);
+
   qDebug(logInfo()) << "Opened: " << path;
 }
 
 // ---------------------------------------------
-// Edit menu slots
 
 void MainWindow::slotUndoAct()   
 { 
@@ -280,7 +204,6 @@ void MainWindow::slotPasteAct()
 }
 
 // ---------------------------------------------
-// Help menu slot
 
 void MainWindow::slotAboutAct()
 {
@@ -288,21 +211,19 @@ void MainWindow::slotAboutAct()
   showAppInfo();
 }
 
-
 // ------------------------------------------------------------
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
   qDebug(logInfo()) << "Close event called.";
-  maybeSave();
-  if (canClose) {
-    onExit();
-    qDebug(logInfo()) << "Closing in action.";
-    event->accept();
-  } else {
-    qDebug(logInfo()) << "Closing ignored.";
+  if (!maybeSave()) 
+  {
     event->ignore();
+    return;
   }
+  onExit();
+  qDebug(logInfo()) << "Closing in action.";
+  event->accept();
 }
 
 // ---------------------------------------------------------------
@@ -316,5 +237,15 @@ void MainWindow::showAppInfo()
 {
   qDebug(logInfo()) << "Dialog called.";
   InfoDialog* dlg = new InfoDialog(this);
+  dlg->setAttribute(Qt::WA_DeleteOnClose);
   dlg->show();
+}
+
+void MainWindow::newDocument()
+{
+  if (!maybeSave()) return;
+  app->clear();
+  app->setModified(false);
+  currentFile.clear();
+  setWindowTitle(tr("Untitled - ") + appName);
 }

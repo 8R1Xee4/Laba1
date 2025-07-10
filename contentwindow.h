@@ -1,5 +1,5 @@
-#ifndef SECONDWINDOW_H
-#define SECONDWINDOW_H
+#ifndef CONTENTWINDOW_H
+#define CONTENTWINDOW_H
 
 #include <QtWidgets>
 #include <QTextEdit>
@@ -14,16 +14,18 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QDebug>
+#include <QListWidget>
 #include <cmath>
 #include "loghandler.h"
+#include "historywidget.h"
 
-class SecondWindow : public QWidget
+class ContentWindow : public QWidget
 {
     Q_OBJECT
 
 public:
-    SecondWindow(QWidget* parent = nullptr);
-    ~SecondWindow() = default;
+    ContentWindow(QWidget* parent = nullptr);
+    ~ContentWindow();
 
     void write(QTextStream& out);
     void read(QTextStream& in);
@@ -38,20 +40,30 @@ public:
     void copy();
 
 public slots:
-    void onButtonPress();
+    void onButtonCalculatePress();
+    void onButtonShowPress();
 
 protected:
-    void initializeSecondWindow();
-    void connectSecondWindow();
-    void calculate();
+    void initializeContentWindow();
+    void connectContentWindow();
+    void handle_root(qreal n, QString& entry, qreal& result, QString inp = "");
+    void handle_pow(qreal n, QString& entry, qreal& result, QString inp = "");
+    void handle_fact(qreal n, QString& entry, qreal& result, QString inp = "");
+    void handle();
+    void showList();
 
 private:
+    QStringList g_history;
+    bool is_m;
+
+    HistoryWidget*    listView;
     QComboBox*      combobox;
     QCheckBox*      checkbox_isWrite;
     QTextEdit*      textedit_input;
     QLabel*         label_output;
     QPushButton*    button_count;
+    QPushButton*    button_showlist;
 };
 
 
-#endif // SECONDWINDOW_H
+#endif // CONTENTWINDOW_H

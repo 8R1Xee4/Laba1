@@ -33,7 +33,6 @@ public:
     LogHandler& operator=(const LogHandler&) = delete;
 protected:
     void write(QTextStream& out, QtMsgType type, const QMessageLogContext &context, const QString &msg);
-
     void handle(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 
 private:

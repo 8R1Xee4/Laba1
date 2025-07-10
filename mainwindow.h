@@ -6,10 +6,9 @@
 #include <QtWidgets>
 #include <QDebug>
 #include <QDialog>
-#include "menu.h"
 #include "infodialog.h"
 #include "loghandler.h"
-#include "secondwindow.h"
+#include "contentwindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -26,10 +25,6 @@ public:
     ~MainWindow();
 
 public slots:
-    void slotStartButton();
-    void slotInfoButton();
-    void slotExitButton();
-
     void slotNewFileAct();
     void slotOpenFileAct();
     void slotSaveFileAct();
@@ -42,24 +37,17 @@ public slots:
     void slotPasteAct();
 
     void slotAboutAct();
-
-
 protected:
     void initializeLogHandler();
     void initializeMainWindow();
-    void initializeMainMenu();
-    void initializeStack();
     void initializeMenuBar();
     void initializeApp();
-
-
-    void connectMainMenu();
-
 
     void closeEvent(QCloseEvent *ev);
 
     void showAppInfo();
     void onExit();
+    void newDocument();
 
     bool     maybeSave();
     bool     saveFile();
@@ -70,13 +58,8 @@ protected:
 private:
     QString appName = "Laba1";
 
-    bool canClose;
-    bool modified;
-
     Ui::MainWindow *ui;
-    MainMenu* menu;
-    SecondWindow* app;
-    QStackedWidget* stack;
+    ContentWindow* app;
 
     QString  currentFile;       // empty == untitled
 

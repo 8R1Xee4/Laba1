@@ -20,15 +20,12 @@ LogHandler::LogHandler() : l_mutex()
 LogHandler::~LogHandler()
 {
     close();
-
     l_instance = nullptr;
 }
 
 void LogHandler::write(QTextStream& out, QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
-    // Записываем дату записи
     out << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz ");
-    // По типу определяем, к какому уровню относится сообщение
     switch (type)
     {
         case QtInfoMsg:     out << "INF "; break;
@@ -38,10 +35,9 @@ void LogHandler::write(QTextStream& out, QtMsgType type, const QMessageLogContex
         case QtFatalMsg:    out << "FTL "; break;
         default: type = QtDebugMsg;
     }
-    // Записываем в вывод категорию сообщения и само сообщение
     out << context.category << ": "
         << msg << Qt::endl;
-    out.flush();    // Очищаем буферизированные данные
+    out.flush();
     if(type == QtFatalMsg)
     {
         qDebug(logInfo()) << "Fatal error: can't continue the work. Closing the application...";
