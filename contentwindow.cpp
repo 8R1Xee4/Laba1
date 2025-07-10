@@ -106,11 +106,13 @@ void ContentWindow::handle()
     }
     else
     {
-        is_m = 1;
-        label_output->setText(entry);
-        listView->addItem(entry);
-        g_history.append(entry);
-        qDebug(logInfo()) << tr("Appended to history:") << entry;
+        if(checkbox_isWrite->isChecked()) {
+            is_m = 1;
+            label_output->setText(entry);
+            listView->addItem(entry);
+            g_history.append(entry);
+            qDebug(logInfo()) << tr("Appended to history:") << entry;
+        }
     }
 }
 
